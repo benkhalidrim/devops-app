@@ -1,14 +1,10 @@
-from flask import Flask, jsonify  # <-- on importe jsonify
+from flask import Flask
 
 app = Flask(__name__)
 
 @app.route('/')
-def hello():
-    return "Hello from Backend (Flask)!"
-
-@app.route('/status')  # <-- nouvelle route
-def status():
-    return jsonify({"status": "ok", "message": "Backend is running"})
+def home():
+    return "Hello, To-Do List!"
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0')
+    app.run(host='0.0.0.0', port=5000)

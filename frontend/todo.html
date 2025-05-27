@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>📝 Ma To-Do List</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: 50px auto;
+      background: #fff;
+      padding: 30px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+      border-radius: 10px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #343a40;
+      margin-bottom: 20px;
+    }
+
+    .input-group {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    #new-task {
+      flex: 1;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 16px;
+    }
+
+    #add-btn {
+      padding: 12px 20px;
+      background-color: #28a745;
+      color: white;
+      font-weight: bold;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    #add-btn:hover {
+      background-color: #218838;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    li {
+      background: #f8f9fa;
+      padding: 12px 15px;
+      margin-bottom: 10px;
+      border-radius: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    li.completed {
+      text-decoration: line-through;
+      color: gray;
+      background: #e2e6ea;
+    }
+
+    .task-text {
+      flex: 1;
+    }
+
+    .btns {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btns button {
+      background: none;
+      border: none;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .complete { color: #17a2b8; }
+    .edit { color: #ffc107; }
+    .delete { color: #dc3545; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📝 Ma To-Do List</h1>
+    <div class="input-group">
+      <input type="text" id="new-task" placeholder="Ajouter une tâche..." />
+      <button id="add-btn">Ajouter</button>
+    </div>
+    <ul id="task-list"></ul>
+  </div>
+
+  <script>
+    const taskInput = document.getElementById('new-task');
+    const addBtn = document.getElementById('add-btn');
+    const taskList = document.getElementById('task-list');
+    let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+
+    function renderTasks() {
+      taskList.innerHTML = '';
+      tasks.forEach((task, index) => {
+        const li = document.createElement('li');
+        li.className = task.completed ? 'completed' : '';
+        li.innerHTML = `
+          <span class="task-text">${task.text}</span>
+          <div class="btns">
+            <button class="complete" onclick="toggleComplete(${index})">✔️</button>
+            <button class="edit" onclick="editTask(${index})">✏️</button>
+            <button class="delete" onclick="deleteTask(${index})">🗑️</button>
+          </div>
+        `;
+        taskList.appendChild(li);
+      });
+    }
+
+    function addTask() {
+      const text = taskInput.value.trim();
+      if (text === '') return;
+
+      tasks.push({ text, completed: false });
+      taskInput.value = '';
+      updateLocalStorage();
+      renderTasks();
+    }
+
+    function deleteTask(index) {
+      tasks.splice(index, 1);
+      updateLocalStorage();
+      renderTasks();
+    }
+
+    function toggleComplete(index) {
+      tasks[index].completed = !tasks[index].completed;
+      updateLocalStorage();
+      renderTasks();
+    }
+
+    function editTask(index) {
+      const newText = prompt('Modifier la tâche :', tasks[index].text);
+      if (newText !== null && newText.trim() !== '') {
+        tasks[index].text = newText.trim();
+        updateLocalStorage();
+        renderTasks();
+      }
+    }
+
+    function updateLocalStorage() {
+      localStorage.setItem('tasks', JSON.stringify(tasks));
+    }
+
+    addBtn.addEventListener('click', addTask);
+    taskInput.addEventListener('keyup', function(e) {
+      if (e.key === 'Enter') addTask();
+    });
+
+    // Load tasks on start
+    renderTasks();
+  </script>
+</body>
+</html>

@@ -1,15 +1,19 @@
-# Image de base Python
-FROM python:3.12-slim
+# Utilise Python
+FROM python:3.11-slim
 
-# Dossier de travail dans le conteneur
+# Définir le répertoire de travail
 WORKDIR /app
 
-# Copier tous les fichiers du dossier courant vers /app dans le conteneur
-COPY . .
+# Copier le code
+COPY backend/ backend/
+COPY frontend/ frontend/
+COPY requirements.txt .
 
-# Installer les dépendances Python
-RUN pip install --no-cache-dir -r requirements.txt
+# Installer les dépendances
+RUN pip install -r requirements.txt
 
-# Commande pour lancer ton app (backend)
+# Exposer le port Flask
+EXPOSE 5000
+
+# Commande pour lancer l'app
 CMD ["python", "backend/app.py"]
-
