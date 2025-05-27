@@ -1,13 +1,17 @@
 pipeline {
     agent any
 
+    environment {
+        DOCKER_IMAGE = 'devops-app:latest'
+        CONTAINER_NAME = 'devops-container'
+    }
+
     stages {
-        stage('Clone') {
+        stage('Checkout') {
             steps {
-                // Cloner le dépôt avec le bon credentialsId
                 git url: 'https://github.com/benkhalidrim/devops-app.git',
                     branch: 'master',
-                    credentialsId: '9b9fa598-f025-4679-b0e4-7cab7e70c0bf'
+                    credentialsId: 'github-credentials'
             }
         }
 
@@ -22,6 +26,29 @@ pipeline {
             steps {
                 echo '🚀 Lancement du conteneur...'
                 sh 'docker run -d -p 5000:5000 devops-app'
+                sh 'docker build -t $DOCKER_IMAGE .'
+            }
+        }
+
+        stage('Run Tests') {
+            steps {
+                // Ajoute ici les tests de ton app, par exemple pytest ou curl /status
+                sh 'echo "Tests réussis (placeholder)"'
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                script {
+                    // Stoppe le conteneur s’il tourne déjà
+                    sh """
+                        if [ \$(docker ps -q -f name=$CONTAINER_NAME) ]; then
+                            docker stop $CONTAINER_NAME
+                            docker rm $CONTAINER_NAME
+                        fi
+                        docker run -d --name $CONTAINER_NAME -p 5000:5000 $DOCKER_IMAGE
+                    """
+                }
             }
         }
     }
