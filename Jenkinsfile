@@ -1,6 +1,13 @@
 pipeline {
     agent any
+
     stages {
+        stage('Clone repository') {
+            steps {
+                git 'https://github.com/benkhalidrim/devops-app.git'
+            }
+        }
+
         stage('Build Docker Image') {
             steps {
                 script {
@@ -8,12 +15,14 @@ pipeline {
                 }
             }
         }
-        stage('Run Container') {
+
+        stage('Run Docker Container') {
             steps {
                 script {
-                    docker.image('simple-webapp').run('-d -p 8080:80')
+                    docker.image('simple-webapp').run('-d -p 80:80')
                 }
             }
         }
     }
 }
+
